@@ -1,3 +1,4 @@
+import re
 from collections import Counter
 from matplotlib import pyplot
 import argparse
@@ -12,13 +13,13 @@ STOPWORDS = {
 
 
 # Helper functions
-def tokenize(text):
-    return text.split()
+def wordTokenizer(text):
+    return re.findall(r"(?:[A-Z]\.)+|\d+\.\d+|\w+(?:'\w+)?|[^\w\s]", text)
 
 def wordsAndFreqs(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
-    tokens = tokenize(raw)
+    tokens = wordTokenizer(raw)
     filtered = [w for w in tokens if w not in STOPWORDS]
     counts = Counter(filtered)
 
