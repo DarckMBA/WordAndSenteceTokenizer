@@ -1,6 +1,6 @@
 import re
 from collections import Counter
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 import argparse
 
 
@@ -10,7 +10,6 @@ STOPWORDS = {
     "at","to","of","for","is","was","it","that",
     "this","with","he","she","i","you","we","they"
 }
-
 
 # List of abreviations
 ABREVIATIONS = {
@@ -76,9 +75,8 @@ def tokenizedWords(filepath, top_n=50):
     counter, total = wordsAndFreqs(filepath)
     words, freqs = zip(*counter.most_common(top_n))
 
-    plt = pyplot
     plt.figure(figsize=(10, 5))
-    plt.title("Top 50 Words in " + filepath)
+    plt.title(f"Top {top_n} Words in {filepath}")
     plt.bar(words, freqs, color="steelblue")
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
@@ -90,23 +88,42 @@ def tokenizedSentences(filepath, top_n=20):
     counter, total = sentecesAndFreqs(filepath)
     sentences, freqs = zip(*counter.most_common(top_n))
 
-    print(f"\nTop {top_n} Most Frequent Sentences:")
-    print("-" * 80)
-    for i, (sentence, freq) in enumerate(zip(sentences, freqs), 1):
-        print(f"{i}. [{freq}x] {sentence}")
-    print("-" * 80)
-    print(f"Total sentences: {total}\n")
+    # Results printed in the console
+    print(f"\nTop {top_n} Most Frequent Sentences")
+    print("=" * 100)
+
+    for rank, (sentence, freq) in enumerate(counter.most_common(top_n), start=1):
+        shortened = sentence[:80] + "..." if len(sentence) > 80 else sentence
+        print(f"{rank:>2}. {freq:>3}x | {shortened}")
+
+    print("=" * 100)
+    print(f"Total sentences: {total}")
+
+    # Results displayed in a chart
+    shortened = [
+        s[:50] + "..." if len(s) > 50 else s
+        for s in sentences
+    ]
+
+    plt.figure(figsize=(12, 6))
+    plt.barh(shortened, freqs)
+    plt.gca().invert_yaxis()
+    plt.xlabel("Frequency")
+    plt.title(f"Top {top_n} Sentences")
+    plt.tight_layout()
+    plt.show()
 
 
 # Command-line arguments
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Analyze word frequencies in text files")
     parser.add_argument("filepath", help="Path to the text file to analyze")
+    parser.add_argument("--number", "-n", type=int, default=10, help="Number of words/sentences to tokenize (default: 10)")
     parser.add_argument("--function", "-f", choices=["words", "sentences"], default="words", help="Analysis function to run")
     
     args = parser.parse_args()
     
     if args.function == "words":
-        tokenizedWords(args.filepath)
+        tokenizedWords(args.filepath, top_n=args.number)
     elif args.function == "sentences":
-        tokenizedSentences(args.filepath)
+        tokenizedSentences(args.filepath, top_n=args.number)
