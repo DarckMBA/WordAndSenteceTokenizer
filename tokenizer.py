@@ -6,9 +6,22 @@ import argparse
 
 # List of words that do not need to be count
 STOPWORDS = {
-    "the","a","an","and","or","but","in","on",
-    "at","to","of","for","is","was","it","that",
-    "this","with","he","she","i","you","we","they"
+    'i', 'me', 'my', 'myself', 'we', 'our', 'ours',
+    'you', 'your', 'yours', 'he', 'him', 'his', 'she',
+    'her', 'it', 'its', 'they', 'them', 'what', 'which',
+    'who', 'this', 'that', 'am', 'is', 'are', 'was',
+    'were', 'be', 'have', 'has', 'had', 'do', 'does',
+    'did', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
+    'because', 'as', 'until', 'while', 'of', 'at', 'by',
+    'for', 'with', 'about', 'against', 'between', 'into',
+    'through', 'during', 'before', 'after', 'above',
+    'below', 'to', 'from', 'up', 'down', 'in', 'out',
+    'on', 'off', 'over', 'under', 'again', 'further',
+    'then', 'once', 'here', 'there', 'when', 'where',
+    'why', 'how', 'all', 'any', 'both', 'each', 'few',
+    'more', 'most', 'other', 'some', 'such', 'no', 'nor',
+    'not', 'only', 'own', 'same', 'so', 'than', 'too',
+    'very', 'can', 'will', 'just', 'should', 'now'
 }
 
 # List of abreviations
@@ -18,61 +31,61 @@ ABREVIATIONS = {
 
 
 # Helper functions
-def wordTokenizer(text):
+def tokenize_words(text):
     return re.findall(r"(?:[A-Z]\.)+|\d+\.\d+|\w+(?:'\w+)?|[^\w\s]", text)
 
-def wordsAndFreqs(filepath):
+def words_and_freqs(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
-    tokens = wordTokenizer(raw)
+    tokens = tokenize_words(raw)
     filtered = [w for w in tokens if w not in STOPWORDS]
     counts = Counter(filtered)
 
     return counts, len(filtered)
 
-def sentenceTokenizer(text):
+def tokenize_sentences(text):
     normalized = text.replace("\n", " ")
     raw = re.findall(r".+?[.?!](?=[\'\"]*\s[\'\"]*[A-Z]|[\'\"]*$)", normalized)
 
     return raw
 
-def mergeAbbreviations(text):
-    mergedText = []
+def merge_abbreviations(text):
+    merged_text = []
     i = 0
     while i < len(text):
-        lastWord = text[i].strip('.?!\"\'').split()[-1]
-        lastWord = lastWord.strip('\"\'\"\'')
-        if (lastWord in ABREVIATIONS):
+        last_word = text[i].strip('.?!\"\'').split()[-1]
+        last_word = last_word.strip('\"\'\"\'')
+        if (last_word in ABREVIATIONS):
             if (i+1 < len(text)):
-                mergedText.append(text[i] + text[i+1])
+                merged_text.append(text[i] + text[i+1])
                 i += 2
             else:
-                mergedText.append(text[i])
+                merged_text.append(text[i])
                 i += 1
         else:
-            mergedText.append(text[i])
+            merged_text.append(text[i])
             i += 1
 
-    cleanedMergedText = []
+    cleaned_merged_text = []
     j = 0
-    while j < len(mergedText):
-        cleanedMergedText.append(mergedText[j].strip(' \"\'\"\''))
+    while j < len(merged_text):
+        cleaned_merged_text.append(merged_text[j].strip(' \"\'\"\''))
         j += 1
 
-    return cleanedMergedText
+    return cleaned_merged_text
 
-def sentecesAndFreqs(filepath):
+def sentences_and_freqs(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         raw = f.read()
-    tokens = mergeAbbreviations(sentenceTokenizer(raw))
+    tokens = merge_abbreviations(tokenize_sentences(raw))
     counts = Counter(tokens)
 
     return counts, len(tokens)
 
 
 # Function for tokenizing words
-def tokenizedWords(filepath, top_n=50):
-    counter, total = wordsAndFreqs(filepath)
+def tokenized_words(filepath, top_n=50):
+    counter, total = words_and_freqs(filepath)
     words, freqs = zip(*counter.most_common(top_n))
 
     plt.figure(figsize=(10, 5))
@@ -84,8 +97,8 @@ def tokenizedWords(filepath, top_n=50):
 
 
 # Function for tokenizing sentences
-def tokenizedSentences(filepath, top_n=20):
-    counter, total = sentecesAndFreqs(filepath)
+def tokenized_sentences(filepath, top_n=20):
+    counter, total = sentences_and_freqs(filepath)
     sentences, freqs = zip(*counter.most_common(top_n))
 
     # Results printed in the console
@@ -124,6 +137,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.function == "words":
-        tokenizedWords(args.filepath, top_n=args.number)
+        tokenized_words(args.filepath, top_n=args.number)
     elif args.function == "sentences":
-        tokenizedSentences(args.filepath, top_n=args.number)
+        tokenized_sentences(args.filepath, top_n=args.number)

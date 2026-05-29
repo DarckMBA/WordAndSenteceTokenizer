@@ -82,7 +82,7 @@ python tokenizer.py frankenstein.txt -f sentences -n 5
 6. **Visualization**: Displays results in the console and as a horizontal bar chart
 
 ### Stopwords
-The tool filters these words by default:
+The tool filters words like:
 ```python
 the, a, an, and, or, but, in, on, at, to, of, for, is, was, it, that, this, with, he, she, i, you, we, they
 ```
@@ -100,15 +100,15 @@ To add more, edit the `ABBREVIATIONS` set in `tokenizer.py`.
 
 ## Function Reference
 ### Core Functions
-- `wordTokenizer(text)` - Splits text into word tokens using regex
-- `wordsAndFreqs(filepath)` - Returns word frequency counter and total filtered word count
-- `sentenceTokenizer(text)` - Splits text into raw sentence tokens
-- `mergeAbbreviations(sentences)` - Re-joins sentence fragments split on abbreviation periods
-- `sentencesAndFreqs(filepath)` - Returns sentence frequency counter and total sentence count
+- `tokenize_words(text)` - Splits text into word tokens using regex
+- `words_and_freqs(filepath)` - Returns word frequency counter and total filtered word count
+- `tokenize_sentences(text)` - Splits text into raw sentence tokens
+- `merge_abbreviations(sentences)` - Re-joins sentence fragments split on abbreviation periods
+- `sentences_and_freqs(filepath)` - Returns sentence frequency counter and total sentence count
 
 ### Analysis Functions
-- `tokenizedWords(filepath, top_n=50)` - Display word frequency bar chart
-- `tokenizedSentences(filepath, top_n=20)` - Print sentence frequency table and display horizontal bar chart
+- `tokenized_words(filepath, top_n=50)` - Display word frequency bar chart
+- `tokenized_sentences(filepath, top_n=20)` - Print sentence frequency table and display horizontal bar chart
 
 **Note**: The `-n` or `--number` command-line flag overrides function defaults.
 
